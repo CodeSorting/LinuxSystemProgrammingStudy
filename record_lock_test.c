@@ -153,6 +153,31 @@ fcntl()은 열린 파일 디스크립터 fd에 대해 아래 설명된 작업 �
 선택적으로 세 번째 인수를 취할 수 있으며, 필요 여부는 cmd에 의해 결정됩니다.
 인수가 필요하지 않은 경우 void가 지정
 
+[CMD]
+파일 디스크립터 복제
+F_DUPFD (int) : 복사된 파일 디스크립터는 잠금, 파일 위치 포인터, 플래그등을 공유한다.
+lseek 등으로 위치 변경 시 복제된 모든 파일 디스크립터도 변경됨
+
+파일 상태 플래그
+F_GETFL (void) : 파일 디스크립터에 대한 플래그값(open 호출시 지정한 플래그)을 되돌려준다.
+F_SETFL (int) : arg 에 지정된 값으로 파일 디스크립터 fd의 플래그를 재설정한다.
+현재는 단지O_APPEND, O_ASYNC, O_DIRECT, O_NONBLOCK 만을 설정할 수 있다.
+다른 플래그들(파일액세스 플래그O_WRONLY 와같은, 파일생성 플래그O_CREAT 와 같은) 은 영향을 받지않는다.
+
+레코드잠금
+F_SETLK (struct flock *) : 잠금을 획득하거나 잠금을 풀기위해서사용
+F_SETLKW (struct flock *) : F_SETLK 과 같은 일을 하지만, 에러 리턴하는 대신 잠금이 풀릴 때까지대기(block)
+F_GETLK (struct flock *) : 잠금이 있는지 없는지 검사한다.
+struct flock {
+    short int l_type; // 잠김 타입: F_RDLCK, F_WRLCK, or F_UNLCK.  
+    short int l_whence; // 파일의 절대적 위치 
+    __off_t l_start; // 파일의 offset 
+    __off_t l_len; // 잠그고자하는 파일의 길이
+    __pid_t l_pid; // 잠금을 얻은 프로세스의 pid
+};
+그외 많은 기능들이 존재한다.
+
+
 #include <unistd.h>
 ssize_t read(int fd, void *buf, size_t count);
 
